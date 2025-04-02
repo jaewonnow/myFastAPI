@@ -1,0 +1,1 @@
+DATABASE_URL = "mysql+pymysql://root:1219@localhost:3306/jmemo"

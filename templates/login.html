@@ -1,0 +1,481 @@
+
+<!DOCTYPE html> <html lang="ko"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>메모앱 로그인</title> <style> /* 기본 스타일 - 검은 배경 */ body { background-color: #000; color: #fff;
+
+pasted
+
+여기서 아이디 입력과 관련된 것은 user_id , 비밀번호 입력과 관련된 것은 user_pw 로 전부 편집해줘
+
+I'll go through the HTML file and update all instances related to user ID input to "user_id" and password input to "user_pw". Here are the changes I'll make:
+
+Looking at the code, I notice there are inconsistencies in how the form fields are handled. For example:
+
+The form has an input with ID "user_id" but the JavaScript tries to use "emailInput"
+The JavaScript function refers to "user_id_Input" which doesn't exist
+The login function uses "email" and "password" variables
+I'll fix all these issues to ensure consistency with "user_id" and "user_pw" throughout the code.
+
+
+Updated Login Page with user_id and user_pw
+코드 
+I've made the following changes to ensure consistency with "user_id" and "user_pw" throughout the code:
+
+HTML Form Fields:
+Changed the password input's id from "password" to "user_pw"
+Updated the password input's name attribute to "user_pw"
+JavaScript References:
+Fixed references to input elements (now user_idInput and user_pwInput)
+Removed the unused emailInput and emailError variables
+Removed the validateEmail function reference since it's not being used
+API Request:
+Updated the JSON payload in the login function to use "user_id" and "user_pw" instead of "email" and "password"
+Changed the error message text from "이메일과 비밀번호" to "아이디와 비밀번호"
+These changes ensure the form works correctly with the updated field names while maintaining all the functionality and styling of the original page.
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메모앱 로그인</title>
+    <style>
+        /* 기본 스타일 - 검은 배경 */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* 헤더 스타일 */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            border-bottom: 2px solid #0ff;
+            padding-bottom: 1rem;
+            box-shadow: 0 0 10px #0ff, 0 0 20px rgba(0,255,255,0.5);
+        }
+        
+        @media (min-width: 640px) {
+            header {
+                flex-direction: row;
+            }
+        }
+        
+        .app-title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+            transition: all 0.3s ease;
+            margin: 0;
+        }
+        
+        .app-title:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            background-color: rgba(10,10,20,0.8);
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #0ff;
+            border-radius: 0.375rem;
+            box-shadow: 0 0 10px #0ff;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+        }
+        
+        /* 로그인 컨테이너 */
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto 3rem;
+            padding: 2rem;
+            border: 2px solid #0ff;
+            border-radius: 0.75rem;
+            background-color: rgba(10,10,20,0.8);
+            box-shadow: 0 0 15px #0ff, 0 0 25px rgba(0,255,255,0.5);
+            animation: neonPulse 2s infinite;
+        }
+        
+        .login-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff, 0 0 10px #0ff;
+        }
+        
+        /* 폼 스타일 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #0ff;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: rgba(20,20,30,0.8);
+            border: 1px solid #0ff;
+            border-radius: 0.375rem;
+            color: white;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            background-color: rgba(30,30,40,0.8);
+            border-color: #f0f;
+            box-shadow: 0 0 8px #f0f;
+        }
+        
+        .error-message {
+            display: none;
+            color: #f55;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            text-shadow: 0 0 5px #f55;
+        }
+        
+        /* 로그인 버튼 */
+        .login-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 2rem;
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            color: white;
+            border: 1px solid #0ff;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(to right, #8E54E9, #4776E6);
+            border-color: #f0f;
+            box-shadow: 0 0 15px rgba(255,0,255,0.7);
+            transform: scale(1.02);
+        }
+        
+        /* 폼 푸터 */
+        .form-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-footer p {
+            margin: 0.5rem 0;
+        }
+        
+        .form-footer a {
+            color: #0ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-footer a:hover {
+            color: #f0f;
+            text-shadow: 0 0 5px #f0f;
+        }
+        
+        /* 푸터 */
+        footer {
+            border-top: 2px solid #0ff;
+            padding: 2rem 0;
+            text-align: center;
+            background-color: rgba(10,10,20,0.8);
+            box-shadow: 0 0 10px #0ff;
+            margin-top: auto;
+        }
+        
+        footer p {
+            font-size: 0.875rem;
+            color: #ccc;
+            margin: 0;
+        }
+        
+        /* 애니메이션 */
+        @keyframes neonPulse {
+            0% {
+                box-shadow: 0 0 10px #0ff, 0 0 20px rgba(0, 255, 255, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 15px #0ff, 0 0 30px rgba(0, 255, 255, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 10px #0ff, 0 0 20px rgba(0, 255, 255, 0.5);
+            }
+        }
+        
+        /* 체크박스 스타일 */
+        .checkbox-wrapper {
+            --checkbox-size: 25px;
+            --checkbox-color: #00ff88;
+            --checkbox-shadow: rgba(0, 255, 136, 0.3);
+            --checkbox-border: rgba(0, 255, 136, 0.7);
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-wrapper input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkbox-wrapper .checkmark {
+            position: relative;
+            width: var(--checkbox-size);
+            height: var(--checkbox-size);
+            border: 2px solid var(--checkbox-border);
+            border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 15px var(--checkbox-shadow);
+            overflow: hidden;
+        }
+        
+        .checkbox-wrapper .checkmark::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--checkbox-color), #00ffcc);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: scale(0) rotate(-45deg);
+        }
+        
+        .checkbox-wrapper input:checked ~ .checkmark::before {
+            opacity: 1;
+            transform: scale(1) rotate(0);
+        }
+        
+        .checkbox-wrapper .checkmark svg {
+            width: 18px;
+            height: 18px;
+            color: #1a1a1a;
+            z-index: 1;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+        }
+        
+        .checkbox-wrapper input:checked ~ .checkmark svg {
+            width: 18px;
+            height: 18px;
+            transform: rotate(360deg);
+        }
+        
+        .checkbox-wrapper:hover .checkmark {
+            border-color: var(--checkbox-color);
+            transform: scale(1.1);
+            box-shadow:
+                0 0 20px var(--checkbox-shadow),
+                0 0 40px var(--checkbox-shadow),
+                inset 0 0 10px var(--checkbox-shadow);
+        }
+        
+        .checkbox-wrapper input:checked ~ .checkmark {
+            animation: pulse 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .checkbox-wrapper .label {
+            margin-left: 10px;
+            color: #0ff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-wrapper:hover .label {
+            color: #00ff88;
+            text-shadow: 0 0 8px rgba(0, 255, 136, 0.7);
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 20px var(--checkbox-shadow);
+            }
+            50% {
+                transform: scale(0.9);
+                box-shadow:
+                    0 0 30px var(--checkbox-shadow),
+                    0 0 50px var(--checkbox-shadow);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px var(--checkbox-shadow);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="app-title">J메모</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">홈</a></li>
+                    <li><a href="/about">소개</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <label class="checkbox-wrapper">
+            <input type="checkbox" />
+            <div class="checkmark">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path
+                        d="M20 6L9 17L4 12"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    ></path>
+                </svg>
+            </div>
+            <span class="label">자동 로그인</span>
+        </label>
+
+        <div class="login-container">
+            <h2 class="login-title">로그인</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="user_id">사용자ID</label>
+                    <input type="text" id="user_id" name="user_id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="user_pw">비밀번호</label>
+                    <input type="password" id="user_pw" name="user_pw" required>
+                    <div class="error-message" id="passwordError">비밀번호는 최소 6자 이상이어야 합니다.</div>
+                </div>
+                
+                <button type="submit" class="login-btn">로그인</button>
+                
+                <div class="form-footer">
+                    <p>계정이 없으신가요? <a href="/signup">회원가입</a></p>
+                    <p><a href="/forgot_password">비밀번호 찾기</a></p>
+                </div>
+            </form>
+        </div>
+
+        <footer>
+            <p>&copy; 2025 J메모. 모든 권리 보유.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const user_idInput = document.getElementById('user_id');
+            const user_pwInput = document.getElementById('user_pw');
+            const passwordError = document.getElementById('passwordError');
+            
+            // 폼 제출 이벤트 처리
+            loginForm.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                // 비밀번호 검증
+                if (user_pwInput.value.length < 6) {
+                    passwordError.style.display = 'block';
+                    isValid = false;
+                } else {
+                    passwordError.style.display = 'none';
+                }
+                
+                // 유효성 검사 실패 시 제출 중단
+                if (!isValid) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                // 실제 로그인 처리 (API 요청)
+                e.preventDefault();
+                login(user_idInput.value, user_pwInput.value);
+            });
+            
+            // 로그인 API 요청 함수
+            async function login(user_id, user_pw) {
+                try {
+                    // 서버 로그인 API 엔드포인트로 요청
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ user_id, user_pw }),
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // 로그인 성공 - 홈 페이지로 리다이렉트
+                        window.location.href = '/';
+                    } else {
+                        // 로그인 실패 - 에러 메시지 표시
+                        alert(data.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
+                    }
+                } catch (error) {
+                    console.error('로그인 중 오류 발생:', error);
+                    alert('로그인 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
