@@ -1,10 +1,9 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
 from main import Base  # 당신의 Base 모델 import
+
 target_metadata = Base.metadata
 
 # this is the Alembic Config object, which provides

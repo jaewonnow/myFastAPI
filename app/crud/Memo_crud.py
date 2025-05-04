@@ -1,18 +1,9 @@
 from sqlalchemy.orm import Session
-from app.models.models import User, Memo
-from app.schemas.schemas import UserCreate, MemoCreate, MemoUpdate
-from app.core.security import get_password_hash
+from app.models.models import  Memo
+from app.schemas.schemas import  MemoCreate, MemoUpdate
+
 from .. import models
-# 유저 생성
-def create_user(db: Session, user: UserCreate):
-    hashed_pw = get_password_hash(user.user_pw)
-    db_user = User(
-        name=user.name, username=user.username, email=user.email, user_id=user.user_id, user_pw=hashed_pw
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+
 
 # 메모 CRUD
 def create_memo(db: Session, memo: MemoCreate):
@@ -24,6 +15,9 @@ def create_memo(db: Session, memo: MemoCreate):
 
 def get_memo(db: Session, memo_id: int):
     return db.query(Memo).filter(Memo.id == memo_id).first()
+
+def get_all_memos(db: Session):
+    return db.query(Memo).all()
 
 def update_memo(db: Session, memo_id: int, memo_update: MemoUpdate):
     db_memo = db.query(Memo).filter(Memo.id == memo_id).first()
@@ -43,3 +37,4 @@ def delete_memo(db: Session, memo_id: int):
     db.delete(db_memo)
     db.commit()
     return {"message": "메모가 삭제되었습니다.", "memo_id": memo_id}
+
