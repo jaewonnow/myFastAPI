@@ -18,9 +18,6 @@ Base.metadata.create_all(bind=engine)
 # 정적 파일 등록
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get('/test')
-async def read_test(request: Request):
-    return templates.TemplateResponse("test.html", {"request": request})
 
 @app.get('/')
 async def read_root(request: Request):

@@ -41,5 +41,4 @@ def read_current_user(current_user: User = Depends(get_current_user)):
     return {
         "user_id": current_user.user_id,
         "username": current_user.name,
-        "email": current_user.email
     }

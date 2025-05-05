@@ -6,26 +6,7 @@
     <title>J메모 - 간편한 메모 관리</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
-    <style>
-        .auth-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .welcome-message {
-            margin-bottom: 0;
-            font-weight: 500;
-        }
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .logout-icon {
-            width: 16px;
-            height: 16px;
-        }
-    </style>
+    
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -35,24 +16,19 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link active" href="/">홈</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/about">소개</a>
                     </li>
+                    <ul class="navbar-nav" id="authNav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login" id="loginLink">로그인</a>
+                        </li>
+                    </ul>
                 </ul>
-                <!-- 인증 상태 표시 영역 -->
-                <div class="auth-container" id="authContainer">
-                    <!-- 로그인 상태에 따라 동적으로 변경됩니다 -->
-                    <div class="auth-container" id="authContainer">
-                        <p class="welcome-message text-white">환영합니다! 테스트님</p>
-                        <button class="btn btn-outline-light btn-sm logout-btn" id="logoutButton">
-                          로그아웃
-                        </button>
-                      </div>
-                </div>
             </div>
         </div>
     </nav>
@@ -61,6 +37,10 @@
         <h1 class="mb-4">메모 관리</h1>
         
         <!-- 메모 작성 폼 -->
+         <!-- From Uiverse.io by javierBarroso --> 
+
+
+         
         <div class="card" id="memoForm">
             <div class="card-header">
                 <h5>새 메모 작성</h5>
@@ -124,13 +104,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+       
         // DOM이 로드되면 실행
         document.addEventListener('DOMContentLoaded', function() {
-            // 인증 상태 확인 및 UI 업데이트
-            checkAuthStatus();
-            
             // 모든 메모 불러오기
             loadMemos();
+            checkLoginStatus(); // 👈 로그인 상태 확인
 
             // 새 메모 폼 제출 이벤트
             document.getElementById('newMemoForm').addEventListener('submit', function(e) {
@@ -144,75 +123,10 @@
             });
         });
 
-        // 인증 상태 확인 및 UI 업데이트
-        async function checkAuthStatus() {
-            const token = localStorage.getItem('accessToken');
-            const authContainer = document.getElementById('authContainer');
-            
-            if (!token) {
-                // 로그인되지 않은 상태
-                authContainer.innerHTML = `
-                    <a href="/login" class="btn btn-outline-light btn-sm" id="loginButton">로그인</a>
-                `;
-                return;
-            }
-            
-            try {
-                // 토큰으로 사용자 정보 가져오기
-                const response = await fetch('/users/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('인증 실패');
-                }
-                
-                const userData = await response.json();
-                
-                // 로그인된 상태 UI 표시
-                authContainer.innerHTML = `
-                    <p class="welcome-message text-white">환영합니다! ${userData.username}님</p>
-                    <button class="btn btn-outline-light btn-sm logout-btn" id="logoutButton">
-                        <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        로그아웃
-                    </button>
-                `;
-                
-                // 로그아웃 버튼 이벤트 리스너 추가
-                document.getElementById('logoutButton').addEventListener('click', logout);
-                
-            } catch (error) {
-                console.error('인증 상태 확인 중 오류:', error);
-                // 오류 발생 시 토큰 제거 및 로그인 버튼 표시
-                localStorage.removeItem('accessToken');
-                authContainer.innerHTML = `
-                    <a href="/login" class="btn btn-outline-light btn-sm" id="loginButton">로그인</a>
-                `;
-            }
-        }
-        
-        // 로그아웃 함수
-        function logout() {
-            localStorage.removeItem('accessToken');
-            // 페이지 새로고침
-            window.location.reload();
-        }
-
         // 모든 메모 불러오기
         async function loadMemos() {
             try {
-                const token = localStorage.getItem('accessToken');
-                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-                
-                const response = await fetch('/memos/all', {
-                    headers: headers
-                });
+                const response = await fetch('/memos/all');
                 const memos = await response.json();
                 
                 const memoList = document.getElementById('memoList');
@@ -260,20 +174,13 @@
         async function createMemo() {
             const title = document.getElementById('memoTitle').value;
             const content = document.getElementById('memoContent').value;
-            const token = localStorage.getItem('accessToken');
             
             try {
-                const headers = {
-                    'Content-Type': 'application/json'
-                };
-                
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                
                 const response = await fetch('/memos/', {
                     method: 'POST',
-                    headers: headers,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({ title, content }),
                 });
                 
@@ -304,25 +211,47 @@
             modal.show();
         }
 
+        //현재 사용자 확인 버튼 클릭 이벤트
+        document.getElementById('checkUserBtn').addEventListener('click', async function () {
+            const resultEl = document.getElementById('currentUserResult');
+            const token = localStorage.getItem('accessToken');
+        
+            if (!token) {
+                resultEl.textContent = '액세스 토큰이 없습니다.';
+                return;
+            }
+        
+            try {
+                const res = await fetch('/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+        
+                if (!res.ok) {
+                    throw new Error('인증 실패');
+                }
+        
+                const user = await res.json();
+                resultEl.textContent = `현재 사용자: ${user.username} `;
+            } catch (err) {
+                console.error('사용자 정보 확인 실패:', err);
+                resultEl.textContent = '사용자 정보를 불러올 수 없습니다.';
+            }
+        });
+
         // 메모 수정
         async function updateMemo() {
             const id = document.getElementById('editMemoId').value;
             const title = document.getElementById('editMemoTitle').value;
             const content = document.getElementById('editMemoContent').value;
-            const token = localStorage.getItem('accessToken');
             
             try {
-                const headers = {
-                    'Content-Type': 'application/json'
-                };
-                
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                
                 const response = await fetch(`/memos/${id}`, {
                     method: 'PUT',
-                    headers: headers,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
                     body: JSON.stringify({ title, content }),
                 });
                 
@@ -343,24 +272,52 @@
             }
         }
 
+        // 로그인 상태 확인 및 UI 전환
+async function checkLoginStatus() {
+    const token = localStorage.getItem('accessToken');
+    const authNav = document.getElementById('authNav');
+
+    if (!token) return; // 토큰 없으면 기본 로그인 버튼 그대로
+
+    try {
+        const res = await fetch('/users/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!res.ok) throw new Error('인증 실패');
+
+        const user = await res.json();
+        // 로그인된 경우 UI 업데이트
+        authNav.innerHTML = `
+            <li class="nav-item">
+                <span class="navbar-text text-white me-2">환영합니다, <strong>${user.username}</strong>님</span>
+                <button class="btn btn-sm btn-outline-light" id="logoutBtn">로그아웃</button>
+            </li>
+        `;
+
+        // 로그아웃 이벤트
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            location.reload(); // 새로고침하여 로그인 버튼으로 돌아가기
+        });
+
+    } catch (err) {
+        console.error('로그인 상태 확인 실패:', err);
+        localStorage.removeItem('accessToken');
+    }
+}
+
         // 메모 삭제
         async function deleteMemo(id) {
             if (!confirm('정말 이 메모를 삭제하시겠습니까?')) {
                 return;
             }
             
-            const token = localStorage.getItem('accessToken');
-            
             try {
-                const headers = {};
-                
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                
                 const response = await fetch(`/memos/${id}`, {
                     method: 'DELETE',
-                    headers: headers
                 });
                 
                 if (!response.ok) {
