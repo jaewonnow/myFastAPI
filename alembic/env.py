@@ -3,6 +3,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 from main import Base  # 당신의 Base 모델 import
+from app.models.models import memo  # 실제 모델이 들어있는 경로
+from app.models.models import user  # 실제 모델이 들어있는 경로
 
 target_metadata = Base.metadata
 

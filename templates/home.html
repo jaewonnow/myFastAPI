@@ -174,27 +174,25 @@
         async function createMemo() {
             const title = document.getElementById('memoTitle').value;
             const content = document.getElementById('memoContent').value;
-            
+            const token = localStorage.getItem('accessToken');  // ✅ 이 줄이 필요
+        
             try {
                 const response = await fetch('/memos/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`  // ✅ 이제 문제 없음
                     },
                     body: JSON.stringify({ title, content }),
                 });
-                
+        
                 if (!response.ok) {
                     throw new Error('메모 생성 실패');
                 }
-                
-                // 폼 초기화
+        
                 document.getElementById('memoTitle').value = '';
                 document.getElementById('memoContent').value = '';
-                
-                // 메모 목록 갱신
                 loadMemos();
-                
             } catch (error) {
                 console.error('메모 생성 중 오류 발생:', error);
                 alert('메모를 생성하는데 실패했습니다.');
@@ -210,35 +208,6 @@
             const modal = new bootstrap.Modal(document.getElementById('editMemoModal'));
             modal.show();
         }
-
-        //현재 사용자 확인 버튼 클릭 이벤트
-        document.getElementById('checkUserBtn').addEventListener('click', async function () {
-            const resultEl = document.getElementById('currentUserResult');
-            const token = localStorage.getItem('accessToken');
-        
-            if (!token) {
-                resultEl.textContent = '액세스 토큰이 없습니다.';
-                return;
-            }
-        
-            try {
-                const res = await fetch('/users/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-        
-                if (!res.ok) {
-                    throw new Error('인증 실패');
-                }
-        
-                const user = await res.json();
-                resultEl.textContent = `현재 사용자: ${user.username} `;
-            } catch (err) {
-                console.error('사용자 정보 확인 실패:', err);
-                resultEl.textContent = '사용자 정보를 불러올 수 없습니다.';
-            }
-        });
 
         // 메모 수정
         async function updateMemo() {

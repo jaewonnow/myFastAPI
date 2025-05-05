@@ -18,3 +18,4 @@ class Memo(Base):
     title = Column(String(100), index=True)
     content = Column(String(1000))
     user_id = Column(Integer, index=True)  # 외래 키지만 관계 없음
+    writer = Column(String(50))  # 작성자 (닉네임)

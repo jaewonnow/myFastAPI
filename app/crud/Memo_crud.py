@@ -1,13 +1,19 @@
 from sqlalchemy.orm import Session
 from app.models.models import  Memo
 from app.schemas.schemas import  MemoCreate, MemoUpdate
-
+from app.core.security import get_current_user
+from app.models.models import User
+from fastapi import Depends
 from .. import models
 
 
 # 메모 CRUD
-def create_memo(db: Session, memo: MemoCreate):
-    db_memo = Memo(title=memo.title, content=memo.content)
+def create_memo(db: Session, memo: MemoCreate, current_user: User = Depends(get_current_user)):
+    db_memo = Memo(
+        title=memo.title,
+        content=memo.content,
+        writer= current_user.name  # 👈 사용자 이름 저장
+    )
     db.add(db_memo)
     db.commit()
     db.refresh(db_memo)

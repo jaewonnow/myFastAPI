@@ -18,8 +18,6 @@ def login(
     db: Session = Depends(get_db)
 ):
     user = get_user(db, user_id)
-    print("입력된 사용자:", user_id)
-    print("입력된 비밀번호:", user_pw)
 
     if not user or not verify_password(user_pw, user.user_pw):
         print("비밀번호 불일치")
