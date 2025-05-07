@@ -39,6 +39,8 @@ async def read_about(request: Request):
 async def read_about(request: Request):
     return templates.TemplateResponse("signupcomplete.html", {"request": request})
 
-
+@app.get('/forgot_password')
+async def read_about(request: Request):
+    return templates.TemplateResponse("forgot_password.html", {"request": request})
 
 

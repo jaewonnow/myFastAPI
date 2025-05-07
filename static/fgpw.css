@@ -1,0 +1,324 @@
+/* 기본 스타일 및 변수 */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --accent-color: #3498db;
+    --light-accent: #5dade2;
+    --success-color: #27ae60;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --light-color: #ecf0f1;
+    --dark-color: #2c3e50;
+    --text-color: #333333;
+    --light-text: #7f8c8d;
+    --border-radius: 6px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+  }
+  
+  /* 전체 페이지 스타일 */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Noto Sans KR', 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-color);
+    background-color: #f9f9f9;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 헤더 스타일 */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  .app-title {
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+    transition: var(--transition);
+  }
+  
+  .app-title:hover {
+    color: var(--accent-color);
+  }
+  
+  nav ul {
+    display: flex;
+    list-style: none;
+  }
+  
+  nav ul li {
+    margin-left: 1.5rem;
+  }
+  
+  nav ul li a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--border-radius);
+  }
+  
+  nav ul li a:hover {
+    color: var(--accent-color);
+    background-color: rgba(52, 152, 219, 0.1);
+  }
+  
+  /* 비밀번호 찾기 컨테이너 스타일 */
+  .forgot-password-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .forgot-password-title {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  .forgot-password-description {
+    color: var(--light-text);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+  
+  /* 폼 스타일 */
+  .forgot-password-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+    font-weight: 500;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+  }
+  
+  .form-group input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    outline: none;
+  }
+  
+  .error-message {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: none;
+  }
+  
+  .success-message {
+    color: var(--success-color);
+    font-size: 0.95rem;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: rgba(39, 174, 96, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(39, 174, 96, 0.3);
+    display: none;
+  }
+  
+  /* 버튼 스타일 */
+  .reset-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+  
+  .reset-btn:hover {
+    background-color: var(--light-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reset-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* 폼 푸터 스타일 */
+  .form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--light-text);
+  }
+  
+  .form-footer p {
+    margin: 0.5rem 0;
+  }
+  
+  .form-footer a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  
+  .form-footer a:hover {
+    color: var(--light-accent);
+    text-decoration: underline;
+  }
+  
+  /* 푸터 스타일 */
+  footer {
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    color: var(--light-text);
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 반응형 스타일 */
+  @media (max-width: 768px) {
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    nav ul {
+      margin-top: 1rem;
+    }
+    
+    nav ul li {
+      margin-left: 0;
+      margin-right: 1rem;
+    }
+    
+    .forgot-password-container {
+      padding: 1.5rem;
+    }
+    
+    .forgot-password-title {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 15px;
+    }
+    
+    .forgot-password-container {
+      padding: 1.2rem;
+    }
+    
+    .form-group input {
+      padding: 0.7rem 0.8rem;
+    }
+    
+    .reset-btn {
+      padding: 0.7rem 1.2rem;
+    }
+  }
+  
+  /* 애니메이션 효과 */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  
+  .shake {
+    animation: shake 0.6s ease-in-out;
+  }
+  
+  /* 로딩 스피너 */
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+    display: none;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* 추가 스타일: 이메일 아이콘 */
+  .email-icon {
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    color: var(--accent-color);
+  }
+  
+  /* 추가 스타일: 입력 필드 아이콘 */
+  .input-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    color: var(--light-text);
+  }
