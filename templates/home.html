@@ -34,11 +34,7 @@
     </nav>
 
     <div class="container mt-4">
-        <h1 class="mb-4">메모 관리</h1>
-        
-        <!-- 메모 작성 폼 -->
-         <!-- From Uiverse.io by javierBarroso --> 
-
+        <h1 class="mb-4">새 메모 작성</h1>
 
          
         <div class="card" id="memoForm">
@@ -147,11 +143,22 @@
             }
         }
 
-        // 메모 카드 HTML 생성
         function createMemoCard(memo) {
             const col = document.createElement('div');
             col.className = 'col-md-4';
-            
+        
+            // 날짜 포맷 함수
+            const formatDate = (isoString) => {
+                const date = new Date(isoString);
+                return date.toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            };
+        
             col.innerHTML = `
                 <div class="card memo-card mb-3">
                     <div class="card-header memo-header">
@@ -159,7 +166,8 @@
                     </div>
                     <div class="card-body">
                         <p class="card-text">${memo.content}</p>
-                        ${memo.writer ? `<p class="text-muted mb-2"><small>작성자: ${memo.writer}</small></p>` : ''}
+                        ${memo.writer ? `<p class="text-muted mb-1"><small>작성자: ${memo.writer}</small></p>` : ''}
+                        ${memo.created_at ? `<p class="text-muted mb-2"><small>작성일: ${formatDate(memo.created_at)}</small></p>` : ''}
                         <div class="memo-actions">
                             <button class="btn btn-sm btn-outline-primary me-2" onclick="openEditModal(${memo.id}, '${memo.title.replace(/'/g, "\\'")}', '${memo.content.replace(/'/g, "\\'")}')">수정</button>
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteMemo(${memo.id})">삭제</button>
@@ -167,24 +175,26 @@
                     </div>
                 </div>
             `;
-            
+        
             return col;
         }
+        
 
-        // 새 메모 생성
         async function createMemo() {
             const title = document.getElementById('memoTitle').value;
             const content = document.getElementById('memoContent').value;
-            const token = localStorage.getItem('accessToken');  // ✅ 이 줄이 필요
+            const token = localStorage.getItem('accessToken');
+        
+            const created_at = new Date().toISOString();  // ✅ UTC 기준 ISO 포맷
         
             try {
                 const response = await fetch('/memos/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`  // ✅ 이제 문제 없음
+                        'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ title, content }),
+                    body: JSON.stringify({ title, content, created_at }),
                 });
         
                 if (!response.ok) {
@@ -199,6 +209,7 @@
                 alert('메모를 생성하는데 실패했습니다.');
             }
         }
+        
 
         // 수정 모달 열기
         function openEditModal(id, title, content) {

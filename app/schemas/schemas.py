@@ -2,6 +2,7 @@ from pydantic import BaseModel,field_validator,EmailStr
 from typing import Optional
 from pydantic import  StringConstraints
 from typing import Annotated
+from datetime import datetime
 
 class UserCreate(BaseModel):
     name: Annotated[str, StringConstraints(min_length=1, max_length=30)]
@@ -24,6 +25,7 @@ class UserLogin(BaseModel):
 class MemoCreate(BaseModel):
     title: str
     content: str
+    created_at: datetime  # 생성일자
 
     @field_validator('title', 'content')
     def not_empty(cls, v, field):

@@ -5,14 +5,15 @@ from app.core.security import get_current_user
 from app.models.models import User
 from fastapi import Depends
 from .. import models
-
+from datetime import datetime,timezone
 
 # 메모 CRUD
 def create_memo(db: Session, memo: MemoCreate, current_user: User = Depends(get_current_user)):
     db_memo = Memo(
         title=memo.title,
         content=memo.content,
-        writer= current_user.name  # 👈 사용자 이름 저장
+        writer= current_user.name, # 👈 사용자 이름 저장
+        created_at= datetime.now(timezone.utc) 
     )
     db.add(db_memo)
     db.commit()
@@ -21,6 +22,9 @@ def create_memo(db: Session, memo: MemoCreate, current_user: User = Depends(get_
 
 def get_memo(db: Session, memo_id: int):
     return db.query(Memo).filter(Memo.id == memo_id).first()
+
+def get_memo_by_create(db: Session, created_at: datetime):
+    return db.query(Memo).filter(Memo.created_at == created_at).first()
 
 def get_all_memos(db: Session):
     return db.query(Memo).all()
