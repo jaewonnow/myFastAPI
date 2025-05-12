@@ -23,11 +23,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/about">소개</a>
                     </li>
-                    <ul class="navbar-nav" id="authNav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login" id="loginLink">로그인</a>
-                        </li>
-                    </ul>
+                    <!-- 마이페이지 버튼은 로그인 상태에 따라 동적으로 추가됩니다 -->
+                    <li class="nav-item" id="myPageNavItem" style="display: none;">
+                        <a class="nav-link" href="/users/mypage">마이페이지</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto" id="authNav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login" id="loginLink">로그인</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -254,41 +258,52 @@
         }
 
         // 로그인 상태 확인 및 UI 전환
-async function checkLoginStatus() {
-    const token = localStorage.getItem('accessToken');
-    const authNav = document.getElementById('authNav');
+        async function checkLoginStatus() {
+            const token = localStorage.getItem('accessToken');
+            const authNav = document.getElementById('authNav');
+            const myPageNavItem = document.getElementById('myPageNavItem');
 
-    if (!token) return; // 토큰 없으면 기본 로그인 버튼 그대로
+            if (!token) {
+                // 토큰 없으면 기본 로그인 버튼 그대로 유지하고 마이페이지 숨김
+                myPageNavItem.style.display = 'none';
+                return;
+            }
 
-    try {
-        const res = await fetch('/users/me', {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-        });
+            try {
+                const res = await fetch('/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
 
-        if (!res.ok) throw new Error('인증 실패');
+                if (!res.ok) throw new Error('인증 실패');
 
-        const user = await res.json();
-        // 로그인된 경우 UI 업데이트
-        authNav.innerHTML = `
-            <li class="nav-item">
-                <span class="navbar-text text-white me-2">환영합니다, <strong>${user.username}</strong>님</span>
-                <button class="btn btn-sm btn-outline-light" id="logoutBtn">로그아웃</button>
-            </li>
-        `;
+                const user = await res.json();
+                
+                // 로그인된 경우 마이페이지 버튼 표시
+                myPageNavItem.style.display = 'block';
+                
+                // 로그인된 경우 UI 업데이트
+                authNav.innerHTML = `
+                    <li class="nav-item">
+                        <span class="navbar-text text-white me-2">환영합니다, <strong>${user.username}</strong>님</span>
+                        <button class="btn btn-sm btn-outline-light" id="logoutBtn">로그아웃</button>
+                    </li>
+                `;
 
-        // 로그아웃 이벤트
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('accessToken');
-            location.reload(); // 새로고침하여 로그인 버튼으로 돌아가기
-        });
+                // 로그아웃 이벤트
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    localStorage.removeItem('accessToken');
+                    location.reload(); // 새로고침하여 로그인 버튼으로 돌아가기
+                });
 
-    } catch (err) {
-        console.error('로그인 상태 확인 실패:', err);
-        localStorage.removeItem('accessToken');
-    }
-}
+            } catch (err) {
+                console.error('로그인 상태 확인 실패:', err);
+                localStorage.removeItem('accessToken');
+                // 인증 실패 시 마이페이지 버튼 숨김
+                myPageNavItem.style.display = 'none';
+            }
+        }
 
         // 메모 삭제
         async function deleteMemo(id) {

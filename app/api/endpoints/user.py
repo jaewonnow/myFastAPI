@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,Request
 from sqlalchemy.orm import Session
 from app.schemas.schemas import UserCreate
 from app.crud.User_crud import create_user
@@ -42,3 +42,15 @@ def read_current_user(current_user: User = Depends(get_current_user)):
         "user_id": current_user.user_id,
         "username": current_user.name,
     }
+    
+
+@router.get("/mypage")
+async def read_mypage(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    return templates.TemplateResponse("mypage.html", {
+        "request": request,
+        "user": current_user
+    })

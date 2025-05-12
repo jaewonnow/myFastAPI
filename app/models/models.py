@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String,DateTime
 from app.db.db import Base
 from datetime import datetime,timezone
+from sqlalchemy.sql import func
 
 class User(Base):
     __tablename__ = "users"
@@ -20,4 +21,4 @@ class Memo(Base):
     content = Column(String(1000))
     user_id = Column(Integer, index=True)  # 외래 키지만 관계 없음
     writer = Column(String(50))  # 작성자 (닉네임)
-    created_at = Column(DateTime, default=datetime.now(timezone.utc))  # ✅ 제대로 된 컬럼 정의s
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

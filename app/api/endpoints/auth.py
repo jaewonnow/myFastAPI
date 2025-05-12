@@ -24,7 +24,6 @@ def login(
         print("비밀번호 불일치")
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
-    print("로그인 성공")
     token = create_access_token({"sub": user.user_id})
     return {"access_token": token, "token_type": "bearer"}
 

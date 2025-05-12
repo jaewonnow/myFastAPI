@@ -42,8 +42,3 @@ async def read_about(request: Request):
 @app.get('/forgot_password')
 async def read_about(request: Request):
     return templates.TemplateResponse("forgot_password.html", {"request": request})
-
-@app.get('/users/mypage')
-async def read_about(request: Request):
-    return templates.TemplateResponse("mypage.html", {"request": request})
-
