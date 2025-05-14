@@ -8,7 +8,7 @@
 </head>
 <body>
     <!-- 네비게이션 바 -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="#">J메모</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -16,243 +16,35 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">홈</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">메모 작성</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">마이페이지</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/">홈</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/write">메모 작성</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">마이페이지</a></li>
                 </ul>
                 <button id="logoutBtn" class="btn btn-outline-light">로그아웃</button>
             </div>
         </div>
     </nav>
 
-    <!-- 메인 컨텐츠 -->
-    <div class="container mt-4">
-        <h1>마이페이지</h1>
-        
-        <!-- 탭 네비게이션 -->
-        <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="true">프로필 정보</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab" aria-controls="password" aria-selected="false">비밀번호 변경</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="memos-tab" data-bs-toggle="tab" data-bs-target="#memos" type="button" role="tab" aria-controls="memos" aria-selected="false">내 메모</button>
-            </li>
-        </ul>
-        
-        <!-- 탭 컨텐츠 -->
-        <div class="tab-content" id="myTabContent">
-            <!-- 프로필 정보 탭 -->
-            <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">프로필 정보 수정</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4 text-center">
-                                <div class="profile-image-container">
-                                    <img src="https://via.placeholder.com/150" alt="프로필 이미지" class="profile-image">
-                                    <div class="profile-image-edit">
-                                        <i class="bi bi-pencil-fill"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <form id="profileForm">
-                                    <div class="mb-3">
-                                       <input type="text" class="form-control" id="username" value="{{ user.name }}">
+  
 
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">이메일</label>
-                                        <input type="email" class="form-control" id="email" value="hong@example.com">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">전화번호</label>
-                                        <input type="tel" class="form-control" id="phone" value="010-1234-5678">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="bio" class="form-label">자기소개</label>
-                                        <textarea class="form-control" id="bio" rows="3">안녕하세요. 메모 서비스를 이용하고 있는 홍길동입니다.</textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">정보 수정</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 비밀번호 변경 탭 -->
-            <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">비밀번호 변경</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="passwordForm">
-                            <div class="mb-3">
-                                <label for="currentPassword" class="form-label">현재 비밀번호</label>
-                                <input type="password" class="form-control" id="currentPassword" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="newPassword" class="form-label">새 비밀번호</label>
-                                <input type="password" class="form-control" id="newPassword" required>
-                                <div class="form-text text-muted">비밀번호는 8자 이상, 영문, 숫자, 특수문자를 포함해야 합니다.</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirmPassword" class="form-label">새 비밀번호 확인</label>
-                                <input type="password" class="form-control" id="confirmPassword" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">비밀번호 변경</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 내 메모 탭 -->
-           
-            </div>
-        </div>
-    </div>
 
-    <!-- 메모 수정 모달 -->
-    <div class="modal fade" id="editMemoModal" tabindex="-1" aria-labelledby="editMemoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editMemoModalLabel">메모 수정</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editMemoForm">
-                        <div class="mb-3">
-                            <label for="memoTitle" class="form-label">제목</label>
-                            <input type="text" class="form-control" id="memoTitle">
-                        </div>
-                        <div class="mb-3">
-                            <label for="memoContent" class="form-label">내용</label>
-                            <textarea class="form-control" id="memoContent" rows="5"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-primary" id="saveMemoBtn">저장</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 삭제 확인 모달 -->
-    <div class="modal fade" id="deleteMemoModal" tabindex="-1" aria-labelledby="deleteMemoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteMemoModalLabel">메모 삭제</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>정말로 이 메모를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">삭제</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 푸터 -->
-    <footer class="bg-dark text-white text-center">
-        <div class="container">
-            <p>&copy; 2023 메모 서비스. All rights reserved.</p>
-        </div>
-    </footer>
-    
+    <!-- 마이페이지 동적 로딩 -->
     <script>
-        // 메모 수정 버튼 클릭 이벤트
-        document.querySelectorAll('.btn-outline-primary.btn-sm').forEach(button => {
-            button.addEventListener('click', function() {
-                const card = this.closest('.memo-card');
-                const title = card.querySelector('.card-title').textContent;
-                const content = card.querySelector('.card-text').textContent;
-                
-                document.getElementById('memoTitle').value = title;
-                document.getElementById('memoContent').value = content;
-                
-                const editModal = new bootstrap.Modal(document.getElementById('editMemoModal'));
-                editModal.show();
-            });
-        });
-        
-        // 메모 삭제 버튼 클릭 이벤트
-        document.querySelectorAll('.btn-outline-danger.btn-sm').forEach(button => {
-            button.addEventListener('click', function() {
-                const deleteModal = new bootstrap.Modal(document.getElementById('deleteMemoModal'));
-                deleteModal.show();
-            });
-        });
-        
-        // 프로필 폼 제출 이벤트
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('프로필 정보가 성공적으로 업데이트되었습니다.');
-        });
-        
-        // 비밀번호 변경 폼 제출 이벤트
-        document.getElementById('passwordForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (newPassword !== confirmPassword) {
-                alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
-                return;
-            }
-            
-            alert('비밀번호가 성공적으로 변경되었습니다.');
-            this.reset();
-        });
-        
-        // 메모 저장 버튼 클릭 이벤트
-        document.getElementById('saveMemoBtn').addEventListener('click', function() {
-            alert('메모가 성공적으로 수정되었습니다.');
-            const editModal = bootstrap.Modal.getInstance(document.getElementById('editMemoModal'));
-            editModal.hide();
-        });
-        
-        // 메모 삭제 확인 버튼 클릭 이벤트
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-            alert('메모가 성공적으로 삭제되었습니다.');
-            const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteMemoModal'));
-            deleteModal.hide();
-        });
-        
-        // 프로필 이미지 수정 클릭 이벤트
-        document.querySelector('.profile-image-edit').addEventListener('click', function() {
-            // 실제로는 파일 선택 다이얼로그를 열어야 함
-            alert('프로필 이미지 변경 기능은 실제 구현 시 파일 업로드 기능이 필요합니다.');
-        });
-        
-        // 로그아웃 버튼 클릭 이벤트
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            if (confirm('정말 로그아웃 하시겠습니까?')) {
-                alert('로그아웃 되었습니다.');
-                // 실제로는 로그인 페이지로 리다이렉트
-                // window.location.href = 'login.html';
+   
+
+
+        // 로그아웃 버튼 동작
+        document.getElementById("logoutBtn").addEventListener("click", function () {
+            if (confirm("정말 로그아웃 하시겠습니까?")) {
+                localStorage.removeItem("accessToken");
+                alert("로그아웃 되었습니다.");
+                window.location.href = "/login.html";
             }
         });
+
+        // 페이지 로드 시 마이페이지 정보 요청
+        window.addEventListener("DOMContentLoaded", loadMypage);
     </script>
 </body>
 </html>

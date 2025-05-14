@@ -25,7 +25,7 @@
                     </li>
                     <!-- 마이페이지 버튼은 로그인 상태에 따라 동적으로 추가됩니다 -->
                     <li class="nav-item" id="myPageNavItem" style="display: none;">
-                        <a class="nav-link" href="/users/mypage">마이페이지</a>
+                        <a class="nav-link" href="#" onclick="loadMypage()">마이페이지</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" id="authNav">
@@ -328,6 +328,29 @@
                 alert('메모를 삭제하는데 실패했습니다.');
             }
         }
+
+        async function loadMypage() {
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login.html";
+        return;
+    }
+
+    const response = await fetch("/users/mypage", {
+        headers: {
+            Authorization: "Bearer " + token
+        }
+    });
+
+    if (response.ok) {
+        const html = await response.text();
+        document.body.innerHTML = html;  // 또는 특정 <div>에 삽입
+    } else {
+        alert("마이페이지 로딩 실패 (code: " + response.status + ")");
+    }
+}
     </script>
 </body>
 </html>
