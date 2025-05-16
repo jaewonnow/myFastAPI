@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String,DateTime
+from sqlalchemy import Column, Integer, String,DateTime,ForeignKey
 from app.db.db import Base
+from sqlalchemy.orm import relationship
 from datetime import datetime,timezone
 from sqlalchemy.sql import func
 
@@ -12,6 +13,7 @@ class User(Base):
     email = Column(String(100))                             #이메일
     user_id = Column(String(50), unique=True, index=True)   #아이디
     user_pw = Column(String(255), index=True)               #비밀번호
+    memos = relationship("Memo", back_populates="user")
 
 class Memo(Base):
     __tablename__ = "memos"
@@ -19,6 +21,6 @@ class Memo(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(100), index=True)
     content = Column(String(1000))
-    user_id = Column(Integer, index=True)  # 외래 키지만 관계 없음
-    writer = Column(String(50))  # 작성자 (닉네임)
+    user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    user = relationship("User", back_populates="memos")
