@@ -3,6 +3,7 @@ from app.db.db import Base
 from sqlalchemy.orm import relationship
 from datetime import datetime,timezone
 from sqlalchemy.sql import func
+from sqlalchemy.orm import Session
 
 
 class User(Base):
@@ -16,13 +17,6 @@ class User(Base):
     user_pw = Column(String(255), index=True)               #비밀번호
     memos = relationship("Memo", back_populates="user")
     
-# def get_memos(self, db: Session):
-#         """
-#         해당 유저가 작성한 모든 메모를 가져오는 메서드
-#         :param db: 데이터베이스 세션
-#         :return: 유저의 모든 메모 목록
-#         """
-#         return db.query(Memo).filter(Memo.user_id == self.id).all()
 
 class Memo(Base):
     __tablename__ = "memos"

@@ -4,13 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
-    <link rel="stylesheet" href="/static/mypagestyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-weight: bold;
+        }
+
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            transition: background-color 0.2s;
+        }
+
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+
+        #memoList {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <h1 class="navbar-brand" >J메모</h1>
+            <h1 class="navbar-brand">J메모</h1>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -18,68 +57,185 @@
                 <ul class="navbar-nav me-auto">
                 </ul>
                 
-                <button id="logoutBtn" class="btn btn-outline-light">로그아웃</button>
+                <button id="logoutBtn" class="btn btn-outline-light me-2">로그아웃</button>
                 <button id="getMemoButton" class="btn btn-outline-light">불러오기</button>
             </div>
         </div>
     </nav>
 
     <div class="container mt-4">
-        <h2>내 메모</h2>
-        <ul id="memoList" class="list-group"></ul>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">내 정보</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>이름:</strong> <span id="name">로딩 중...</span></p>
+                        <p><strong>닉네임:</strong> <span id="username">로딩 중...</span></p>
+                        <p><strong>이메일:</strong> <span id="email">로딩 중...</span></p>
+                        <p><strong>아이디:</strong> <span id="userId">로딩 중...</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">내 메모</h3>
+                        <span class="badge bg-light text-dark" id="memoCount">0</span>
+                    </div>
+                    <div class="card-body">
+                        <ul id="memoList" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-   
+    <!-- 오류 모달 -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="errorModalLabel">오류 발생</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">오류가 발생했습니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" id="goToLoginBtn">로그인 페이지로 이동</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
-        async function loadloginMypage() {
-    console.log("loadMypage called");
-    const token = localStorage.getItem("accessToken");
-    console.log("Token:", token);
-    if (!token) {
-        alert("로그인이 필요합니다.");
-        window.location.href = "/login.html";
-        return;
-    }
-
-    try {
-        const response = await fetch("/users/mypage", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
+        // 오류 모달 관련 변수
+        let errorModal;
+        
+        // 페이지 로드 시 모달 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            
+            // 로그인 페이지로 이동 버튼 이벤트
+            document.getElementById('goToLoginBtn').addEventListener('click', function() {
+                window.location.href = '/login.html';
+            });
+            
+            // 페이지 로드 시 자동으로 데이터 불러오기
+            loadMypage();
         });
-        console.log("Response Status:", response.status);
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error("인증 실패: 다시 로그인해 주세요.");
+        // 오류 표시 함수
+        function showError(message, isAuthError = false) {
+            document.getElementById('errorMessage').textContent = message;
+            errorModal.show();
+            
+            if (isAuthError) {
+                localStorage.removeItem("accessToken");
             }
-            throw new Error(`마이페이지 로딩 실패 (code: ${response.status})`);
         }
 
-        const data = await response.json();
-        console.log("Data:", data);
-        document.getElementById("username").textContent = data.username;
+        async function loadMypage() {
+            console.log("loadMypage called");
+            const token = localStorage.getItem("accessToken");
+            console.log("Token:", token);
+            if (!token) {
+                showError("로그인이 필요합니다.", true);
+                return;
+            }
 
-        const memoList = document.getElementById("memoList");
-        memoList.innerHTML = "";
-        (data.memos || []).forEach(memo => {
-            const li = document.createElement("li");
-            li.className = "list-group-item";
-            li.innerHTML = `<strong>${memo.title}</strong><br>${memo.content}<br><small>작성자: ${memo.username} | ${new Date(memo.created_at).toLocaleString()}</small>`;
-            memoList.appendChild(li);
-        });
-    } catch (error) {
-        console.error("Error:", error.message);
-        alert(error.message || "오류가 발생했습니다.");
-        localStorage.removeItem("accessToken");
-        setTimeout(() => {
-            window.location.href = "/login.html";
-        }, 1000);
-    }
-}
+            try {
+                const response = await fetch("/users/me", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                console.log("Response Status:", response.status);
 
+                // 응답 타입 확인
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("서버가 JSON 형식으로 응답하지 않았습니다. API 엔드포인트를 확인해주세요.");
+                }
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error("인증 실패: 다시 로그인해 주세요.");
+                    }
+                    throw new Error(`마이페이지 로딩 실패 (code: ${response.status})`);
+                }
+
+                const data = await response.json();
+                console.log("User Data:", data);
+                
+                // 사용자 정보 표시
+                document.getElementById("name").textContent = data.name || '정보 없음';
+                document.getElementById("username").textContent = data.username || '정보 없음';
+                document.getElementById("email").textContent = data.email || '정보 없음';
+                document.getElementById("userId").textContent = data.user_id || '정보 없음';
+
+                // 메모 목록 표시
+                const memoList = document.getElementById("memoList");
+                memoList.innerHTML = "";
+                
+                if (data.memos && data.memos.length > 0) {
+                    // 메모 개수 업데이트
+                    document.getElementById("memoCount").textContent = data.memos.length;
+                    
+                    // 메모 목록 생성
+                    data.memos.forEach(memo => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item";
+                        
+                        const createdDate = new Date(memo.created_at).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        li.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-1">${memo.title}</h5>
+                                <small class="text-muted">${createdDate}</small>
+                            </div>
+                            <p class="mb-1">${memo.content}</p>
+                        `;
+                        memoList.appendChild(li);
+                    });
+                } else {
+                    // 메모가 없는 경우
+                    document.getElementById("memoCount").textContent = "0";
+                    const li = document.createElement("li");
+                    li.className = "list-group-item text-center text-muted";
+                    li.textContent = "작성한 메모가 없습니다.";
+                    memoList.appendChild(li);
+                }
+            } catch (error) {
+                console.error("Error:", error.message);
+                
+                // JSON 파싱 오류 처리
+                if (error.name === 'SyntaxError' && error.message.includes('Unexpected token')) {
+                    showError("API 응답이 올바른 JSON 형식이 아닙니다. 서버 설정을 확인해주세요.", false);
+                } else if (error.message.includes('인증 실패')) {
+                    showError(error.message, true);
+                } else {
+                    showError(error.message || "오류가 발생했습니다.");
+                }
+            }
+        }
+
+        // 메모 불러오기 버튼 이벤트
+        document.getElementById("getMemoButton").addEventListener("click", loadMypage);
+
+        // 로그아웃 버튼 이벤트
         document.getElementById("logoutBtn").addEventListener("click", () => {
             if (confirm("정말 로그아웃 하시겠습니까?")) {
                 localStorage.removeItem("accessToken");
@@ -87,8 +243,6 @@
                 window.location.href = "/login.html";
             }
         });
-
-        window.addEventListener("DOMContentLoaded", loadMypage);
     </script>
 </body>
 </html>

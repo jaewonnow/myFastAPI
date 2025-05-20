@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,Request
 from sqlalchemy.orm import Session
 from app.schemas.schemas import UserCreate
-from app.crud.User_crud import create_user
+from app.crud.User_crud import create_user,get_Mymemos
 from app.db.db import get_db
 from fastapi import Form
 from app.models.models import User
@@ -35,12 +35,22 @@ async def signup(
 def read_current_user(current_user: User = Depends(get_current_user)):
     return {
         "user_id": current_user.user_id,
-        "username": current_user.name,
+        "name" : current_user.name,
+        "username": current_user.username,
+        "email": current_user.email,
+        "user_id" : current_user.user_id,
+        "user_pw" : current_user.user_pw
     }
+    
+@router.get("/memo") 
+def read_current_user(current_user: User = Depends(get_current_user_optional)):
+    
+    return get_Mymemos(current_user)
     
 
 @router.get("/mypage")
 async def read_mypage(
+    
     request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_optional)

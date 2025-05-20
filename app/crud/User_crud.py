@@ -1,6 +1,6 @@
 from app.schemas.schemas import UserCreate
 from sqlalchemy.orm import Session
-from app.models.models import User
+from app.models.models import User,Memo
 from app.core.security import get_password_hash
 # 유저 생성
 def create_user(db: Session, user: UserCreate):
@@ -21,3 +21,6 @@ def get_user_by_email(db: Session, email: str):
 
 def get_user_by_name(db: Session, name: str):
     return db.query(User).filter(User.name == name).first()
+
+def get_Mymemos(db: Session):
+        return db.query(Memo).filter(Memo.user_id == User.id).all()
