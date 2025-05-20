@@ -25,7 +25,7 @@
                     </li>
                     <!-- 마이페이지 버튼은 로그인 상태에 따라 동적으로 추가됩니다 -->
                     <li class="nav-item" id="myPageNavItem" style="display: none;">
-                        <a class="nav-link" href="#" onclick="loadMypage()">마이페이지</a>
+                        <a class="nav-link" href="/users/mypage">마이페이지</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto" id="authNav">
@@ -184,35 +184,41 @@
         }
         
 
-        async function createMemo() {
-            const title = document.getElementById('memoTitle').value;
-            const content = document.getElementById('memoContent').value;
-            const token = localStorage.getItem('accessToken');
-        
-            const created_at = new Date().toISOString();  // ✅ UTC 기준 ISO 포맷
-        
-            try {
-                const response = await fetch('/memos/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ title, content, created_at }),
-                });
-        
-                if (!response.ok) {
-                    throw new Error('메모 생성 실패');
-                }
-        
-                document.getElementById('memoTitle').value = '';
-                document.getElementById('memoContent').value = '';
-                loadMemos();
-            } catch (error) {
-                console.error('메모 생성 중 오류 발생:', error);
-                alert('메모를 생성하는데 실패했습니다.');
-            }
+      async function createMemo() {
+    const title = document.getElementById('memoTitle').value;
+    const content = document.getElementById('memoContent').value;
+    const token = localStorage.getItem('accessToken');
+
+    const created_at = new Date().toISOString();  // ✅ UTC 기준 ISO 포맷
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch('/memos/', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ title, content, created_at }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('서버 에러 응답:', errorData);
+            throw new Error('메모 생성 실패');
         }
+
+        document.getElementById('memoTitle').value = '';
+        document.getElementById('memoContent').value = '';
+        loadMemos();
+    } catch (error) {
+        console.error('메모 생성 중 오류 발생:', error);
+        alert('메모를 생성하는데 실패했습니다.');
+    }
+}
         
 
         // 수정 모달 열기
@@ -338,7 +344,7 @@
             return;
         }
 
-        const response = await fetch("/users/mypage", {
+        const response = await get("/users/mypage", {
             headers: {
                 Authorization: "Bearer " + token
             }

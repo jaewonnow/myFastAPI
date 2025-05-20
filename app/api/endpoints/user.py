@@ -7,7 +7,7 @@ from fastapi import Form
 from app.models.models import User
 
 router = APIRouter()
-from app.core.security import get_current_user
+from app.core.security import get_current_user,get_current_user_optional
 from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory="templates")
@@ -43,9 +43,18 @@ def read_current_user(current_user: User = Depends(get_current_user)):
 async def read_mypage(
     request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user_optional)
 ):
     return templates.TemplateResponse("mypage.html", {
         "request": request,
         "user": current_user
     })
+    
+    
+# @router.post("/test-anon")
+# async def test_anonymous(
+#     current_user: Optional[User] = Depends(get_current_user_optional)
+# ):
+#     if current_user is None:
+#         return {"message": "익명 사용자입니다."}
+#     return {"message": f"안녕하세요, {current_user.username}님!"}

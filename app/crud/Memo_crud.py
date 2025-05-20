@@ -1,18 +1,19 @@
 from sqlalchemy.orm import Session
 from app.models.models import  Memo
 from app.schemas.schemas import  MemoCreate, MemoUpdate
-from app.core.security import get_current_user
+from app.core.security import get_current_user,get_current_user_optional
+from typing import Optional
 from app.models.models import User
 from fastapi import Depends
 from .. import models
 from datetime import datetime,timezone
 
 # 메모 CRUD
-def create_memo(db: Session, memo: MemoCreate, current_user: User = Depends(get_current_user)):
+def create_memo(db: Session, memo: MemoCreate, current_user: Optional[User] = None):
     db_memo = Memo(
         title=memo.title,
         content=memo.content,
-        user_id= current_user.id, # 👈 사용자 이름 저장
+        user_id= current_user.id if current_user else None, # 👈 사용자 이름 저장
         created_at= datetime.now(timezone.utc) 
     )
     db.add(db_memo)

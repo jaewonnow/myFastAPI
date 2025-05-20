@@ -7,39 +7,80 @@
     <link rel="stylesheet" href="/static/mypagestyle.css">
 </head>
 <body>
-    
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">J메모</a>
+            <h1 class="navbar-brand" >J메모</h1>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">홈</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/write">메모 작성</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">마이페이지</a></li>
                 </ul>
+                
                 <button id="logoutBtn" class="btn btn-outline-light">로그아웃</button>
+                <button id="getMemoButton" class="btn btn-outline-light">불러오기</button>
             </div>
         </div>
     </nav>
-    
 
-    <span class="navbar-text me-2">환영합니다, <strong>${user.username}</strong>님</span>
+    <div class="container mt-4">
+        <h2>내 메모</h2>
+        <ul id="memoList" class="list-group"></ul>
+    </div>
 
-  
-
-
-
-    <!-- 마이페이지 동적 로딩 -->
-    <script>
    
+    <script>
+        async function loadloginMypage() {
+    console.log("loadMypage called");
+    const token = localStorage.getItem("accessToken");
+    console.log("Token:", token);
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login.html";
+        return;
+    }
 
+    try {
+        const response = await fetch("/users/mypage", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        console.log("Response Status:", response.status);
 
-        // 로그아웃 버튼 동작
-        document.getElementById("logoutBtn").addEventListener("click", function () {
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error("인증 실패: 다시 로그인해 주세요.");
+            }
+            throw new Error(`마이페이지 로딩 실패 (code: ${response.status})`);
+        }
+
+        const data = await response.json();
+        console.log("Data:", data);
+        document.getElementById("username").textContent = data.username;
+
+        const memoList = document.getElementById("memoList");
+        memoList.innerHTML = "";
+        (data.memos || []).forEach(memo => {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.innerHTML = `<strong>${memo.title}</strong><br>${memo.content}<br><small>작성자: ${memo.username} | ${new Date(memo.created_at).toLocaleString()}</small>`;
+            memoList.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Error:", error.message);
+        alert(error.message || "오류가 발생했습니다.");
+        localStorage.removeItem("accessToken");
+        setTimeout(() => {
+            window.location.href = "/login.html";
+        }, 1000);
+    }
+}
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
             if (confirm("정말 로그아웃 하시겠습니까?")) {
                 localStorage.removeItem("accessToken");
                 alert("로그아웃 되었습니다.");
@@ -47,7 +88,6 @@
             }
         });
 
-        // 페이지 로드 시 마이페이지 정보 요청
         window.addEventListener("DOMContentLoaded", loadMypage);
     </script>
 </body>
