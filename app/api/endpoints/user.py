@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,Request
 from sqlalchemy.orm import Session
 from app.schemas.schemas import UserCreate
-from app.crud.User_crud import create_user,get_Mymemos
+from app.crud.User_crud import create_user,get_mymemos
 from app.db.db import get_db
 from fastapi import Form
 from app.models.models import User

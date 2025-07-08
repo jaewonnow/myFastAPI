@@ -22,5 +22,5 @@ def get_user_by_email(db: Session, email: str):
 def get_user_by_name(db: Session, name: str):
     return db.query(User).filter(User.name == name).first()
 
-def get_Mymemos(db: Session):
-        return db.query(Memo).filter(Memo.user_id == User.id).all()
+def get_mymemos(db: Session, current_user: User):
+    return db.query(Memo).filter(Memo.user_id == current_user.id).all()
