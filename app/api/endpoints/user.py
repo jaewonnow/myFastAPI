@@ -31,7 +31,7 @@ async def signup(
     # 회원 생성 후 사용자 정보 JSON으로 반환
     return create_user(db, user)
 
-@router.get("/me")  # 또는 "/users/me"
+@router.get("/me")  
 def read_current_user(current_user: User = Depends(get_current_user)):
     return {
         "user_id": current_user.user_id,

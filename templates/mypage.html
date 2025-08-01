@@ -140,7 +140,6 @@
         }
 
         async function loadMypage() {
-            console.log("loadMypage called");
             const token = localStorage.getItem("accessToken");
             console.log("Token:", token);
             if (!token) {
@@ -156,7 +155,6 @@
                         "Content-Type": "application/json"
                     }
                 });
-                console.log("Response Status:", response.status);
 
                 // 응답 타입 확인
                 const contentType = response.headers.get("content-type");
