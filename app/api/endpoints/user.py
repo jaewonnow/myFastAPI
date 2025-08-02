@@ -5,6 +5,7 @@ from app.crud.User_crud import create_user,get_mymemos
 from app.db.db import get_db
 from fastapi import Form
 from app.models.models import User
+from app.models.PydanticModel import UserResponse
 
 router = APIRouter()
 from app.core.security import get_current_user,get_current_user_optional
@@ -31,35 +32,25 @@ async def signup(
     # 회원 생성 후 사용자 정보 JSON으로 반환
     return create_user(db, user)
 
-@router.get("/me")  
+@router.get("/me", response_model=UserResponse) # response_model 추가
 def read_current_user(current_user: User = Depends(get_current_user)):
-    return {
-        "user_id": current_user.user_id,
-        "name" : current_user.name,
-        "username": current_user.username,
-        "email": current_user.email,
-        "user_id" : current_user.user_id,
-        "user_pw" : current_user.user_pw
-    }
-    
-@router.get("/memo") 
-def read_current_user(current_user: User = Depends(get_current_user_optional)):
-    
-    return get_Mymemos(current_user)
-    
+    # current_user 객체에는 이미 memos 데이터가 로드되어 있습니다 (Eager Loading).
+    # FastAPI는 UserResponse Pydantic 모델에 따라 current_user 객체를 직렬화합니다.
+    # UserResponse 모델에 정의된 필드만 반환됩니다 (user_pw는 포함되지 않음).
+    return current_user
 
+# mypage.html을 렌더링하는 부분은 변경 없이 그대로 둡니다.
+# (HTML 템플릿에서는 current_user 객체의 memos 속성을 직접 활용하면 됩니다.)
 @router.get("/mypage")
 async def read_mypage(
-    
     request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user_optional)
 ):
     return templates.TemplateResponse("mypage.html", {
         "request": request,
-        "user": current_user
+        "user": current_user # current_user.memos를 템플릿에서 사용 가능
     })
-    
     
 # @router.post("/test-anon")
 # async def test_anonymous(

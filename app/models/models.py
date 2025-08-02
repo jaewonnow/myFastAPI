@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String,DateTime,ForeignKey
 from app.db.db import Base
 from sqlalchemy.orm import relationship
-from datetime import datetime,timezone
 from sqlalchemy.sql import func
-from sqlalchemy.orm import Session
+
 
 
 class User(Base):

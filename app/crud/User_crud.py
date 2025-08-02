@@ -17,7 +17,7 @@ def create_user(db: Session, user: UserCreate):
 
 def get_user(db: Session, user_id: str, load_memos: bool = False):
     """
-    주어진 user_id로 사용자를 조회합니다.
+    주어진 user_id로 사용자 조회.
     load_memos가 True인 경우, 사용자의 메모 관계도 함께 로드합니다.
     """
     # 기본 쿼리: user_id를 기준으로 사용자를 조회
