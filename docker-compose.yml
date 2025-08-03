@@ -1,0 +1,38 @@
+
+#### 1. `docker-compose.yml` 파일 내용
+
+# Docker Compose 파일: docker-compose.yml
+version: '3.8'
+
+services:
+  # 1. FastAPI 서버 서비스 정의
+  fastapi_app:
+    # 현재 디렉터리의 Dockerfile을 사용하여 이미지 빌드
+    build: .
+    # 컨테이너 포트 8000을 호스트 포트 8000으로 연결
+    ports:
+      - "8000:8000"
+    # FastAPI 애플리케이션 실행 명령어
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    # Redis 서비스가 시작될 때까지 기다림
+    depends_on:
+      - redis
+    # 환경 변수 설정 (Dockerfile에서 설정할 수도 있음)
+    environment:
+      - REDIS_HOST=redis  # Redis 서비스의 컨테이너 이름을 호스트로 지정
+      - REDIS_PORT=6379
+
+  # 2. Redis 서버 서비스 정의
+  redis:
+    # 공식 Redis 이미지 사용
+    image: redis:7-alpine
+    # Redis 데이터가 영구적으로 보존되도록 볼륨 설정 (선택 사항)
+    volumes:
+      - redis-data:/data
+    # 컨테이너 포트 6379를 호스트 포트 6379로 연결 (선택 사항)
+    ports:
+      - "6379:6379"
+
+# 3. 데이터 볼륨 설정
+volumes:
+  redis-data:
